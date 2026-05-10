@@ -169,3 +169,7 @@ To continue on another PC:
 - run DB script if needed
 - `cd ReportPoc`
 - `dotnet run`
+
+Current public repository:
+
+- https://github.com/surajkumar8642/print-system-reporting-poc
