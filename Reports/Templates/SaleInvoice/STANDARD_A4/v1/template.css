@@ -1,0 +1,38 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 24px;
+  color: #111;
+}
+
+.invoice {
+  width: 100%;
+}
+
+.invoice-header,
+.party-block,
+.tax-block,
+.totals {
+  margin-bottom: 16px;
+}
+
+.meta {
+  display: flex;
+  gap: 24px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid #999;
+  padding: 8px;
+  text-align: left;
+}
+
+.totals {
+  text-align: right;
+}

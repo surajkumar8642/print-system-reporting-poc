@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crystal Style Report Studio</title>
+  <style>
+    :root {
+      --bg: #eef3fc;
+      --panel: #ffffff;
+      --line: #d4deee;
+      --ink: #0f1f3b;
+      --muted: #5b6782;
+      --blue: #0b66c3;
+      --blue-soft: #e5eefc;
+      --green: #0f8f4a;
+      --danger: #c53030;
+      --shadow: 0 6px 16px rgba(23, 35, 64, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Tahoma, "Segoe UI", Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #f0f4fc 0%, #edf2ff 40%, #e8effc 100%);
+      color: var(--ink);
+    }
+
+    .top {
+      background: #10213f;
+      color: #fff;
+      padding: 14px 18px;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    .top h1 { margin: 0 0 10px 0; font-size: 20px; }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 8px;
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      color: #d6deef;
+      letter-spacing: 0.2px;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+    }
+
+    .toolbar input, .toolbar select, .toolbar textarea, .toolbar button {
+      width: 100%;
+      border: 1px solid #31456a;
+      border-radius: 8px;
+      padding: 7px 9px;
+      font-size: 13px;
+      color: #dbe6ff;
+      background: #f8fbff;
+      color: #132344;
+    }
+
+    .toolbar textarea {
+      min-height: 56px;
+      resize: vertical;
+    }
+
+    .shell {
+      max-width: 1500px;
+      margin: 12px auto;
+      padding: 0 12px 12px;
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--panel);
+      box-shadow: 0 1px 0 rgba(18, 39, 73, 0.06);
+    }
+
+    .panel > .head {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .panel .body {
+      padding: 10px 12px;
+    }
+
+    .left {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .search {
+      width: 100%;
+      border: 1px solid #c4d0e8;
+      border-radius: 8px;
+      padding: 7px 9px;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .table-card {
+      border: 1px solid #d5dff1;
+      border-radius: 9px;
+      margin-bottom: 8px;
+      background: #fcfdff;
+      overflow: hidden;
+    }
+
+    .table-title {
+      background: #f0f5ff;
+      padding: 8px 10px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      border-bottom: 1px solid #dce6fb;
+    }
+
+    .table-title.open {
+      background: #dce8ff;
+    }
+
+    .column-list {
+      display: none;
+      padding: 7px;
+    }
+
+    .column-list.open {
+      display: grid;
+      gap: 6px;
+    }
+
+    .column-item {
+      border: 1px solid #dbe7fb;
+      background: #fff;
+      border-radius: 8px;
+      padding: 6px 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    .col-meta {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.3;
+    }
+
+    .col-name { line-height: 1.2; font-weight: 600; }
+
+    .small-btn {
+      font-size: 11px;
+      border: 1px solid #bfd0f0;
+      background: #f4f8ff;
+      border-radius: 999px;
+      padding: 3px 7px;
+      cursor: pointer;
+      color: #12315f;
+    }
+
+    .function-item {
+      margin-bottom: 8px;
+      border: 1px dashed #cfd9ee;
+      border-radius: 8px;
+      padding: 8px;
+      background: #f9fbff;
+      font-size: 12px;
+    }
+
+    .function-item strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .function-item .fexpr {
+      color: #4b5670;
+      font-size: 11px;
+      margin-bottom: 6px;
+      word-break: break-word;
+    }
+
+    .function-list {
+      max-height: 320px;
+      overflow: auto;
+      margin-top: 6px;
+    }
+
+    .selected-functions {
+      border: 1px dashed #b7c6e8;
+      border-radius: 8px;
+      background: #f7fbff;
+      min-height: 72px;
+      padding: 7px;
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .function-select {
+      display: flex;
+      gap: 6px;
+    }
+
+    .function-select select {
+      flex: 1;
+      border: 1px solid #c9d5ed;
+      padding: 7px;
+      border-radius: 8px;
+      background: #fff;
+      font-size: 12px;
+    }
+
+    .chip {
+      background: #fff;
+      border: 1px solid #d2e0f7;
+      border-radius: 999px;
+      padding: 5px 8px;
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      max-width: 100%;
+      word-break: break-word;
+    }
+
+    .chip button {
+      border: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 99px;
+      background: #eff5ff;
+      color: #1f365a;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 10px;
+      line-height: 1;
+    }
+
+    .right {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .designer-canvas {
+      display: grid;
+      gap: 10px;
+    }
+
+    .zone {
+      border: 1px dashed #b4c4e0;
+      border-radius: 10px;
+      background: #f6f9ff;
+      padding: 10px;
+      min-height: 92px;
+      transition: background .2s, border-color .2s;
+    }
+
+    .zone h3 {
+      margin: 0 0 8px 0;
+      font-size: 14px;
+      color: #14315d;
+    }
+
+    .zone.drag-over {
+      border-color: #2f6fcb;
+      background: #edf4ff;
+    }
+
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      min-height: 22px;
+    }
+
+    .note {
+      color: #647592;
+      font-size: 12px;
+      margin: 0 0 8px 0;
+    }
+
+    .formula {
+      border: 1px solid #d5e0ef;
+      border-radius: 9px;
+      background: #fff;
+      margin-top: 6px;
+      padding: 8px;
+    }
+
+    .formula .row {
+      display: grid;
+      grid-template-columns: 1fr 2fr auto;
+      gap: 6px;
+      margin-bottom: 7px;
+    }
+
+    .formula input, .formula textarea {
+      border: 1px solid #cedaf0;
+      border-radius: 7px;
+      padding: 7px 8px;
+      font-size: 12px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .btn {
+      border: 1px solid #c4d4ec;
+      border-radius: 8px;
+      padding: 8px 10px;
+      background: #ecf3ff;
+      cursor: pointer;
+      font-size: 12px;
+      color: #15305f;
+      font-weight: 700;
+    }
+
+    .btn.primary {
+      background: var(--blue);
+      color: #fff;
+      border-color: #0a4aa0;
+    }
+
+    .btn.danger {
+      background: #ffe6e6;
+      color: #8a0d0d;
+      border-color: #f5bcbc;
+    }
+
+    .btn.success {
+      color: #0f7a34;
+      background: #e7f7e8;
+      border-color: #b9dfba;
+    }
+
+    .status {
+      border: 1px solid #d8e1f2;
+      border-radius: 8px;
+      background: #fff;
+      padding: 8px 10px;
+      min-height: 52px;
+      white-space: pre-wrap;
+      font-size: 12px;
+      margin-top: 8px;
+      color: #1a2640;
+      font-family: Consolas, "Segoe UI Mono", Menlo, monospace;
+    }
+
+    .status.ok {
+      border-color: #93d39a;
+      background: #f2fff5;
+      color: #0f6a2e;
+    }
+
+    .status.err {
+      border-color: #f0b6bd;
+      background: #fff4f5;
+      color: #8f1429;
+    }
+
+    .small-card {
+      font-size: 12px;
+      border: 1px solid #dbe3f5;
+      border-radius: 8px;
+      padding: 8px;
+      background: #fbfdff;
+      margin-top: 8px;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .preview-frame {
+      width: 100%;
+      border: 1px solid #d6e1f3;
+      min-height: 420px;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    iframe { width: 100%; border: 0; min-height: 420px; }
+
+    details summary {
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 13px;
+      color: #15305f;
+      margin-top: 8px;
+    }
+
+    pre {
+      margin-top: 8px;
+      max-height: 260px;
+      overflow: auto;
+      background: #f8fbff;
+      border: 1px solid #d9e3f4;
+      border-radius: 8px;
+      padding: 8px;
+      font-size: 11px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .subtle-title {
+      margin: 0 0 8px 0;
+      color: #30486e;
+      font-size: 13px;
+    }
+
+    @media (max-width: 1240px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+      .right {
+        order: 2;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1>Crystal-style Report Designer</h1>
+    <div class="toolbar">
+      <div>
+        <label>Report</label>
+        <select id="reportCode"></select>
+      </div>
+      <div>
+        <label>Version</label>
+        <input id="versionInput" value="v1" />
+      </div>
+      <div>
+        <label>Database Connection String</label>
+        <input id="connectionStringInput" placeholder="Leave empty to use app default connection string" />
+      </div>
+      <div>
+        <label>Schema</label>
+        <input id="schemaInput" value="dbo" />
+      </div>
+      <div>
+        <label>Parameter Name</label>
+        <input id="paramName" value="saleId" />
+      </div>
+      <div>
+        <label>Parameter Value</label>
+        <input id="paramValue" type="number" value="101" />
+      </div>
+      <div>
+        <label>Custom CSS</label>
+        <textarea id="cssInput">body { font-family: Arial, sans-serif; margin: 16px; } table { width: 100%; border-collapse: collapse; } </textarea>
+      </div>
+    </div>
+  </header>
+
+  <div class="shell">
+    <aside class="left">
+      <section class="panel">
+        <div class="head">
+          <span>Database Explorer</span>
+          <button class="btn primary" id="loadTablesBtn" type="button">Load Database</button>
+        </div>
+        <div class="body">
+          <input id="tableSearch" class="search" placeholder="Search table/column" />
+          <div id="tableContainer"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="head">
+          <span>Function Library</span>
+          <button class="btn success" id="clearFunctionsBtn" type="button">Clear</button>
+        </div>
+        <div class="body">
+          <div class="function-select">
+            <select id="functionSelect"></select>
+            <button class="btn" id="addFunctionBtn" type="button">Add</button>
+          </div>
+          <div id="selectedFunctionPills" class="selected-functions" aria-live="polite"></div>
+          <p class="note">Selected functions are auto-expanded to required dataset fields by compile.</p>
+          <div class="function-list" id="functionCatalogContainer"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="head">
+          <span>Formula Area</span>
+          <button class="btn" id="addFormulaBtn" type="button">Add Formula</button>
+        </div>
+        <div class="body">
+          <div id="formulaContainer"></div>
+        </div>
+      </section>
+    </aside>
+
+    <main class="right">
+      <section class="panel">
+        <div class="head">
+          <span>Report Designer (Canvas)</span>
+          <button class="btn danger" id="clearDesignBtn" type="button">Clear Design</button>
+        </div>
+        <div class="body">
+          <div class="designer-canvas">
+            <div class="zone" data-zone="header">
+              <h3>Report Header (single row)</h3>
+              <div class="pill-list" data-target="header"></div>
+            </div>
+            <div class="zone" data-zone="items">
+              <h3>Detail Table (repeating)</h3>
+              <div class="pill-list" data-target="items"></div>
+            </div>
+            <div class="zone" data-zone="tax">
+              <h3>Tax Area (repeating)</h3>
+              <div class="pill-list" data-target="tax"></div>
+            </div>
+            <div class="zone" data-zone="footer">
+              <h3>Summary/Footer (single row)</h3>
+              <div class="pill-list" data-target="footer"></div>
+            </div>
+            <div class="zone" data-zone="subreport">
+              <h3>Subreport Section (repeating)</h3>
+              <div class="pill-list" data-target="subreport"></div>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn primary" id="compileBtn" type="button">Compile</button>
+            <button class="btn primary" id="previewBtn" type="button">Compile &amp; Preview</button>
+          </div>
+          <div id="statusPanel" class="status">Loading..</div>
+          <details>
+            <summary>Generated Definition</summary>
+            <pre id="definitionOutput"></pre>
+          </details>
+          <details>
+            <summary>Generated Template</summary>
+            <pre id="templateOutput"></pre>
+          </details>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="head">
+          <span>Runtime Mapping</span>
+          <button class="btn" id="regenerateBtn" type="button">Rebuild Mapping</button>
+        </div>
+        <div class="body">
+          <div id="datasetList" class="small-card"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="head">
+          <span>Preview</span>
+        </div>
+        <div class="body">
+          <iframe id="previewFrame" title="preview" class="preview-frame"></iframe>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const zoneRules = {
+      header: { title: "Report Header", isSingleRow: true },
+      items: { title: "Detail Section", isSingleRow: false },
+      tax: { title: "Tax Area", isSingleRow: false },
+      footer: { title: "Summary", isSingleRow: true },
+      subreport: { title: "Subreport", isSingleRow: false }
+    };
+
+    const state = {
+      tables: [],
+      catalogFunctions: [],
+      selectedFunctions: [],
+      selectedZones: {
+        header: [],
+        items: [],
+        tax: [],
+        footer: [],
+        subreport: []
+      },
+      datasets: {},
+      formulas: []
+    };
+
+    const ui = {
+      reportCode: document.getElementById("reportCode"),
+      version: document.getElementById("versionInput"),
+      connection: document.getElementById("connectionStringInput"),
+      schema: document.getElementById("schemaInput"),
+      paramName: document.getElementById("paramName"),
+      paramValue: document.getElementById("paramValue"),
+      cssInput: document.getElementById("cssInput"),
+      tableSearch: document.getElementById("tableSearch"),
+      tableContainer: document.getElementById("tableContainer"),
+      selectedFunctionPills: document.getElementById("selectedFunctionPills"),
+      functionSelect: document.getElementById("functionSelect"),
+      functionCatalogContainer: document.getElementById("functionCatalogContainer"),
+      formulaContainer: document.getElementById("formulaContainer"),
+      statusPanel: document.getElementById("statusPanel"),
+      datasetList: document.getElementById("datasetList"),
+      previewFrame: document.getElementById("previewFrame"),
+      definitionOutput: document.getElementById("definitionOutput"),
+      templateOutput: document.getElementById("templateOutput")
+    };
+
+    function setStatus(message, level = "") {
+      ui.statusPanel.textContent = message;
+      ui.statusPanel.className = "status" + (level ? ` ${level}` : "");
+    }
+
+    function logError(message) {
+      setStatus(message, "err");
+    }
+
+    function toAlias(name) {
+      if (!name) return "";
+      const cleaned = name.replace(/[^a-zA-Z0-9_]/g, " ").trim();
+      const parts = cleaned.split(/\s+/).filter(Boolean);
+      if (parts.length === 0) return "";
+      const first = parts[0][0].toLowerCase() + parts[0].slice(1);
+      const rest = parts.slice(1).map(x => x[0].toUpperCase() + x.slice(1)).join("");
+      return first + rest;
+    }
+
+    function functionExpressionSet() {
+      return new Set(state.selectedFunctions.map(x => x.toLowerCase()));
+    }
+
+    function normalizeFilterName(str) {
+      if (!str) return "";
+      return str[0].toUpperCase() + str.slice(1);
+    }
+
+    function nextAliasIfCollision(baseAlias, targetSingleRow) {
+      const base = state.datasets[baseAlias];
+      if (!base) return baseAlias;
+      if (base.isSingleRow === targetSingleRow) return baseAlias;
+
+      const used = new Set(Object.keys(state.datasets));
+      let suffix = 1;
+      while (used.has(`${baseAlias}_${suffix}`)) suffix++;
+      return `${baseAlias}_${suffix}`;
+    }
+
+    async function requestJson(url, options = {}) {
+      const response = await fetch(url, {
+        headers: { "Content-Type": "application/json" },
+        ...options
+      });
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP ${response.status}: ${text}`);
+      }
+      return response.json();
+    }
+
+    function makeChip(text, onRemove) {
+      const chip = document.createElement("span");
+      chip.className = "chip";
+      const label = document.createElement("span");
+      label.textContent = text;
+      const close = document.createElement("button");
+      close.type = "button";
+      close.textContent = "×";
+      close.title = "Remove";
+      close.addEventListener("click", onRemove);
+      chip.append(label, close);
+      return chip;
+    }
+
+    function renderZones() {
+      Object.keys(zoneRules).forEach(zone => {
+        const zoneEl = document.querySelector(`.pill-list[data-target="${zone}"]`);
+        zoneEl.innerHTML = "";
+        for (const item of state.selectedZones[zone]) {
+          const text = `${item.table}.${item.column} -> ${item.alias}`;
+          zoneEl.appendChild(makeChip(text, () => removeField(zone, item.id)));
+        }
+      });
+    }
+
+    function renderDatasetList() {
+      const entries = Object.values(state.datasets);
+      if (!entries.length) {
+        ui.datasetList.textContent = "No dataset created yet.";
+        return;
+      }
+
+      ui.datasetList.innerHTML = "";
+      for (const ds of entries) {
+        const card = document.createElement("div");
+        card.className = "small-card";
+        const p = document.createElement("div");
+        p.style.fontWeight = "700";
+        p.textContent = `${ds.name} (${ds.provider})`;
+        const c = document.createElement("div");
+        c.textContent = `Fields: ${ds.fields.join(", ") || "none"}`;
+        const meta = document.createElement("div");
+        meta.className = "note";
+        meta.style.marginTop = "6px";
+        meta.textContent = `Mode: ${ds.isSingleRow ? "single row" : "list rows"}`;
+        const form = document.createElement("div");
+        form.className = "split";
+
+        const inputFilter = document.createElement("input");
+        inputFilter.value = ds.filterField || "SaleId";
+        inputFilter.placeholder = "FilterField";
+        inputFilter.addEventListener("change", () => ds.filterField = inputFilter.value);
+
+        const inputOrder = document.createElement("input");
+        inputOrder.value = ds.orderBy || "";
+        inputOrder.placeholder = "OrderBy";
+        inputOrder.addEventListener("change", () => ds.orderBy = inputOrder.value);
+
+        inputFilter.style.border = inputOrder.style.border = "1px solid #cfd9ee";
+        inputFilter.style.borderRadius = inputOrder.style.borderRadius = "7px";
+        inputFilter.style.padding = inputOrder.style.padding = "5px";
+        inputFilter.style.fontSize = inputOrder.style.fontSize = "11px";
+
+        form.append(inputFilter, inputOrder);
+        card.append(p, c, meta, form);
+        ui.datasetList.appendChild(card);
+      }
+    }
+
+    function allColumnsUsedInZones() {
+      const all = [];
+      for (const key of Object.keys(state.selectedZones)) {
+        all.push(...state.selectedZones[key]);
+      }
+      return all;
+    }
+
+    function refreshDatasetForAlias(alias, usedColumns) {
+      if (!state.datasets[alias]) return;
+      const columns = [...new Set(usedColumns.filter(x => x.alias === alias).map(x => x.column))];
+      if (columns.length === 0) {
+        delete state.datasets[alias];
+      } else {
+        state.datasets[alias].fields = columns;
+      }
+    }
+
+    function removeField(zone, id) {
+      const list = state.selectedZones[zone];
+      const idx = list.findIndex(x => x.id === id);
+      if (idx < 0) return;
+      const removed = list.splice(idx, 1)[0];
+      refreshDatasetForAlias(removed.alias, allColumnsUsedInZones());
+      renderZones();
+      renderDatasetList();
+      generateAssets();
+    }
+
+    function addFieldToZone(table, column, zone) {
+      const exists = state.selectedZones[zone].some(x => x.table === table && x.column === column);
+      if (exists) {
+        setStatus(`Already used: ${table}.${column}`, "ok");
+        return;
+      }
+
+      const aliasBase = toAlias(table);
+      const alias = nextAliasIfCollision(aliasBase, zoneRules[zone].isSingleRow);
+      const item = { id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`, table, column, alias, zone };
+      if (!state.datasets[alias]) {
+        state.datasets[alias] = {
+          name: alias,
+          provider: table,
+          fields: [column],
+          isSingleRow: zoneRules[zone].isSingleRow,
+          filterField: "SaleId",
+          orderBy: ""
+        };
+      } else if (!state.datasets[alias].fields.includes(column)) {
+        state.datasets[alias].fields.push(column);
+      }
+
+      state.selectedZones[zone].push(item);
+      renderZones();
+      renderDatasetList();
+      generateAssets();
+    }
+
+    function applyZoneListeners() {
+      document.querySelectorAll(".zone").forEach(zone => {
+        zone.addEventListener("dragover", e => {
+          e.preventDefault();
+          zone.classList.add("drag-over");
+        });
+        zone.addEventListener("dragleave", () => zone.classList.remove("drag-over"));
+        zone.addEventListener("drop", e => {
+          e.preventDefault();
+          zone.classList.remove("drag-over");
+          try {
+            const payload = JSON.parse(e.dataTransfer.getData("application/json"));
+            if (!payload?.table || !payload?.column) return;
+            addFieldToZone(payload.table, payload.column, zone.getAttribute("data-zone"));
+            setStatus(`Added ${payload.table}.${payload.column} to ${zone.getAttribute("data-zone")} zone`, "ok");
+          } catch (err) {
+            logError(err.message || "Invalid drag payload.");
+          }
+        });
+      });
+    }
+
+    function renderTables() {
+      const term = (ui.tableSearch.value || "").toLowerCase().trim();
+      ui.tableContainer.innerHTML = "";
+
+      const matched = state.tables.filter(t =>
+        t.tableName.toLowerCase().includes(term) ||
+        (t.columns || []).some(c => c.columnName.toLowerCase().includes(term))
+      );
+
+      if (!matched.length) {
+        ui.tableContainer.textContent = "No tables found.";
+        return;
+      }
+
+      for (const table of matched) {
+        const card = document.createElement("div");
+        card.className = "table-card";
+
+        const head = document.createElement("div");
+        head.className = "table-title";
+        head.textContent = table.tableName;
+        const list = document.createElement("div");
+        list.className = "column-list";
+
+        for (const col of table.columns || []) {
+          const item = document.createElement("div");
+          item.className = "column-item";
+          const left = document.createElement("div");
+          const name = document.createElement("div");
+          name.className = "col-name";
+          name.textContent = col.columnName;
+          const meta = document.createElement("div");
+          meta.className = "col-meta";
+          meta.textContent = `${col.dataType}${col.maxLength ? `(${col.maxLength})` : ""}`;
+          left.append(name, meta);
+
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "small-btn";
+          btn.textContent = "Drag";
+          btn.draggable = true;
+          btn.addEventListener("dragstart", e => {
+            e.dataTransfer.setData("application/json", JSON.stringify({ table: table.tableName, column: col.columnName }));
+          });
+
+          item.append(left, btn);
+          list.appendChild(item);
+        }
+
+        head.addEventListener("click", () => {
+          head.classList.toggle("open");
+          list.classList.toggle("open");
+        });
+        card.append(head, list);
+        ui.tableContainer.appendChild(card);
+      }
+    }
+
+    function renderFunctionSelect() {
+      ui.functionSelect.innerHTML = "";
+      for (const f of state.catalogFunctions) {
+        const option = document.createElement("option");
+        option.value = f.name;
+        option.textContent = `${f.name} - ${f.description || ""}`;
+        ui.functionSelect.appendChild(option);
+      }
+      if (state.catalogFunctions.length) {
+        ui.functionSelect.value = state.catalogFunctions[0].name;
+      }
+    }
+
+    function renderSelectedFunctionPills() {
+      ui.selectedFunctionPills.innerHTML = "";
+      for (const fn of state.selectedFunctions) {
+        const chip = makeChip(fn, () => {
+          const i = state.selectedFunctions.findIndex(x => x === fn);
+          if (i >= 0) {
+            state.selectedFunctions.splice(i, 1);
+          }
+          renderSelectedFunctionPills();
+          generateAssets();
+        });
+        ui.selectedFunctionPills.appendChild(chip);
+      }
+    }
+
+    function renderFunctionCatalog() {
+      ui.functionCatalogContainer.innerHTML = "";
+      for (const fn of state.catalogFunctions) {
+        const item = document.createElement("div");
+        item.className = "function-item";
+        const title = document.createElement("strong");
+        title.textContent = fn.name;
+        const expr = document.createElement("div");
+        expr.className = "fexpr";
+        expr.textContent = fn.expression || "";
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "small-btn";
+        btn.textContent = state.selectedFunctions.includes(fn.name) ? "Remove" : "Add";
+        btn.addEventListener("click", () => {
+          const index = state.selectedFunctions.indexOf(fn.name);
+          if (index < 0) {
+            state.selectedFunctions.push(fn.name);
+          } else {
+            state.selectedFunctions.splice(index, 1);
+          }
+          renderSelectedFunctionPills();
+          renderFunctionCatalog();
+          generateAssets();
+        });
+        item.append(title, expr, btn);
+        ui.functionCatalogContainer.appendChild(item);
+      }
+    }
+
+    function addFormula() {
+      state.formulas.push({
+        name: `Formula_${state.formulas.length + 1}`,
+        expression: "saleHeader.NetAmount - saleHeader.TotalTax"
+      });
+      renderFormulaRows();
+      generateAssets();
+    }
+
+    function renderFormulaRows() {
+      ui.formulaContainer.innerHTML = "";
+      state.formulas.forEach((f, i) => {
+        const row = document.createElement("div");
+        row.className = "formula";
+        const titleRow = document.createElement("div");
+        titleRow.className = "row";
+        const n = document.createElement("input");
+        n.value = f.name;
+        n.placeholder = "Formula name";
+        n.addEventListener("input", e => {
+          f.name = e.target.value;
+          generateAssets();
+        });
+        const expr = document.createElement("input");
+        expr.value = f.expression;
+        expr.placeholder = "Expression (ex: saleHeader.NetAmount + saleHeader.TotalTax)";
+        expr.addEventListener("input", e => {
+          f.expression = e.target.value;
+          generateAssets();
+        });
+        const del = document.createElement("button");
+        del.type = "button";
+        del.className = "btn danger";
+        del.textContent = "Delete";
+        del.addEventListener("click", () => {
+          state.formulas.splice(i, 1);
+          renderFormulaRows();
+          generateAssets();
+        });
+        titleRow.append(n, expr, del);
+        row.appendChild(titleRow);
+        ui.formulaContainer.appendChild(row);
+      });
+    }
+
+    function buildDefinition() {
+      const datasets = Object.values(state.datasets).map(ds => ({
+        name: ds.name,
+        provider: ds.provider,
+        fields: [...new Set(ds.fields)],
+        isSingleRow: ds.isSingleRow,
+        filterField: ds.filterField || "SaleId",
+        orderBy: ds.orderBy || ""
+      }));
+
+      const params = [];
+      if (ui.paramName.value.trim()) {
+        params.push({
+          name: ui.paramName.value.trim(),
+          type: "int",
+          required: true
+        });
+      }
+
+      const bindings = [];
+      for (const zone of Object.keys(state.selectedZones)) {
+        for (const field of state.selectedZones[zone]) {
+          bindings.push({
+            control: `${zone}-${field.alias}-${field.column}`,
+            field: `${field.alias}.${field.column}`
+          });
+        }
+      }
+
+      return {
+        reportCode: ui.reportCode.value || "SALE_INVOICE_STANDARD_A4",
+        rootEntity: "Sale",
+        parameters: params,
+        datasets,
+        bindings,
+        formulas: state.formulas.filter(f => f.name && f.expression).map(f => ({ name: f.name, expression: f.expression })),
+        functionNames: [...state.selectedFunctions],
+        templateHtml: "",
+        templateCss: ""
+      };
+    }
+
+    function buildTemplate(definition) {
+      const zoneMap = {};
+      for (const k of Object.keys(zoneRules)) zoneMap[k] = new Map();
+
+      for (const zone of Object.keys(state.selectedZones)) {
+        for (const item of state.selectedZones[zone]) {
+          const existing = zoneMap[zone].get(item.alias) || [];
+          if (!existing.includes(item.column)) {
+            existing.push(item.column);
+          }
+          zoneMap[zone].set(item.alias, existing);
+        }
+      }
+
+      const scalarRows = zone => {
+        const parts = [];
+        for (const [alias, cols] of zoneMap[zone]) {
+          for (const c of cols) {
+            parts.push(`<div><strong>${alias}.${c}:</strong> {{${alias}.${c}}}</div>`);
+          }
+        }
+        return parts.join("\n");
+      };
+
+      const tableRows = (zone, label) => {
+        const list = [];
+        for (const [alias, cols] of zoneMap[zone]) {
+          const h = cols.map(c => `<th>${c}</th>`).join("");
+          const b = cols.map(c => `<td>{{${c}}}</td>`).join("");
+          list.push(`
+<section>
+  <h3>${label}: ${alias}</h3>
+  <table>
+    <thead><tr>${h}</tr></thead>
+    <tbody>
+      {{#each ${alias}}}
+      <tr>${b}</tr>
+      {{/each}}
+    </tbody>
+  </table>
+</section>`);
+        }
+        return list.join("\n");
+      };
+
+      const fnRows = [];
+      for (const fn of state.selectedFunctions) {
+        fnRows.push(`<div>${fn}: {{computed.fn_${fn}}}</div>`);
+      }
+      for (const f of state.formulas) {
+        if (f.name) fnRows.push(`<div>${f.name}: {{computed.${f.name}}}</div>`);
+      }
+
+      return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Report Preview</title>
+  <style>
+${ui.cssInput.value || "body { font-family: Arial, sans-serif; }"}
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 6px; text-align: left; }
+    h3 { margin: 10px 0 6px; font-size: 14px; }
+    section { margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+  <section>
+    <h2>Header</h2>
+    ${scalarRows("header")}
+  </section>
+  ${tableRows("items", "Items")}
+  ${tableRows("tax", "Tax")}
+  ${tableRows("subreport", "Subreport")}
+  <section>
+    <h2>Summary</h2>
+    ${scalarRows("footer")}
+  </section>
+  <section>
+    <h2>Computed</h2>
+    ${fnRows.join("\n")}
+  </section>
+</body>
+</html>`;
+    }
+
+    function generateAssets() {
+      const definition = buildDefinition();
+      const templateHtml = buildTemplate(definition);
+      definition.templateHtml = templateHtml;
+      definition.templateCss = ui.cssInput.value || "";
+      ui.definitionOutput.textContent = JSON.stringify(definition, null, 2);
+      ui.templateOutput.textContent = templateHtml;
+      return { definition, templateHtml };
+    }
+
+    async function loadReports() {
+      const reports = await requestJson("/api/reports");
+      ui.reportCode.innerHTML = "";
+      for (const report of reports) {
+        const opt = document.createElement("option");
+        opt.value = report.reportCode;
+        opt.textContent = `${report.reportCode} - ${report.name || "Report"}`;
+        ui.reportCode.appendChild(opt);
+      }
+      const hasDefault = reports.some(r => r.reportCode === "SALE_INVOICE_STANDARD_A4");
+      ui.reportCode.value = hasDefault ? "SALE_INVOICE_STANDARD_A4" : (reports[0]?.reportCode || "SALE_INVOICE_STANDARD_A4");
+    }
+
+    async function loadTables() {
+      const conn = ui.connection.value.trim();
+      const schema = ui.schema.value.trim() || "dbo";
+      const query = conn ? `?connectionString=${encodeURIComponent(conn)}&schema=${encodeURIComponent(schema)}` : `?schema=${encodeURIComponent(schema)}`;
+      state.tables = await requestJson(`/api/data/tables${query}`);
+      renderTables();
+      setStatus(`Loaded ${state.tables.length} table(s) from metadata.`, "ok");
+    }
+
+    async function loadFunctions() {
+      state.catalogFunctions = await requestJson("/api/function-catalog");
+      renderFunctionSelect();
+      renderFunctionCatalog();
+    }
+
+    async function compileReport() {
+      const payload = buildPayload();
+      if (!payload.definition.datasets.length) {
+        logError("Select at least one field.");
+        return;
+      }
+      const reportCode = ui.reportCode.value || "SALE_INVOICE_STANDARD_A4";
+      setStatus("Compiling...");
+      const result = await requestJson(`/api/reports/${encodeURIComponent(reportCode)}/compile`, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+      setStatus(`Compiled. Report=${result.reportCode}, Version=${result.version}, Compiled=${result.compiledVersion}, dynamic=${result.isDynamic}`, "ok");
+    }
+
+    async function previewReport() {
+      const payload = buildPayload();
+      if (!payload.definition.datasets.length) {
+        logError("Select at least one field.");
+        return;
+      }
+      const reportCode = ui.reportCode.value || "SALE_INVOICE_STANDARD_A4";
+      setStatus("Compiling and rendering...");
+      const result = await requestJson(`/api/reports/${encodeURIComponent(reportCode)}/preview`, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+      ui.previewFrame.srcdoc = result.html || "";
+      setStatus(`Preview rendered. compiled=${result.compiledVersion}, dynamic=${result.isDynamic}`, "ok");
+    }
+
+    function buildPayload() {
+      const definitionObj = buildDefinition();
+      const template = buildTemplate(definitionObj);
+      definitionObj.templateHtml = template;
+      definitionObj.templateCss = ui.cssInput.value || "";
+
+      return {
+        version: ui.version.value || "v1",
+        connectionString: ui.connection.value?.trim() || null,
+        parameters: {
+          [ui.paramName.value.trim() || "saleId"]: parseInt(ui.paramValue.value || "0", 10) || 0
+        },
+        definition: definitionObj,
+        templateHtml: template,
+        templateCss: ui.cssInput.value || ""
+      };
+    }
+
+    function clearDesign() {
+      state.selectedZones = {
+        header: [],
+        items: [],
+        tax: [],
+        footer: [],
+        subreport: []
+      };
+      state.datasets = {};
+      renderZones();
+      renderDatasetList();
+      generateAssets();
+      setStatus("Design cleared.", "ok");
+    }
+
+    function clearFunctions() {
+      state.selectedFunctions = [];
+      renderSelectedFunctionPills();
+      renderFunctionCatalog();
+      generateAssets();
+    }
+
+    function bindEvents() {
+      applyZoneListeners();
+      document.getElementById("loadTablesBtn").addEventListener("click", loadTables);
+      document.getElementById("clearDesignBtn").addEventListener("click", clearDesign);
+      document.getElementById("addFormulaBtn").addEventListener("click", addFormula);
+      document.getElementById("addFunctionBtn").addEventListener("click", () => {
+        const name = ui.functionSelect.value;
+        if (!name) return;
+        if (!state.selectedFunctions.includes(name)) {
+          state.selectedFunctions.push(name);
+        }
+        renderSelectedFunctionPills();
+        renderFunctionCatalog();
+        generateAssets();
+      });
+      document.getElementById("compileBtn").addEventListener("click", async () => {
+        try { await compileReport(); } catch (err) { logError(err.message || "Compile failed"); }
+      });
+      document.getElementById("previewBtn").addEventListener("click", async () => {
+        try { await previewReport(); } catch (err) { logError(err.message || "Preview failed"); }
+      });
+      document.getElementById("regenerateBtn").addEventListener("click", () => {
+        generateAssets();
+        setStatus("Mapping rebuilt.", "ok");
+      });
+      document.getElementById("clearFunctionsBtn").addEventListener("click", clearFunctions);
+      ui.tableSearch.addEventListener("input", renderTables);
+      ui.cssInput.addEventListener("input", generateAssets);
+    }
+
+    async function init() {
+      bindEvents();
+      renderZones();
+      renderFormulaRows();
+      renderSelectedFunctionPills();
+      setStatus("Initializing...");
+      await Promise.all([loadReports(), loadFunctions()]);
+      try {
+        await loadTables();
+      } catch (err) {
+        logError(`Could not fetch metadata: ${err.message}`);
+      }
+      generateAssets();
+      setStatus("Ready. Drag columns from Database Explorer into the right canvas.", "ok");
+    }
+
+    init().catch(err => {
+      logError(err.message || "Initialization failed.");
+    });
+  </script>
+</body>
+</html>

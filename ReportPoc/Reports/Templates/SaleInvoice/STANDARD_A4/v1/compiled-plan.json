@@ -1,0 +1,57 @@
+{
+  "reportCode": "SALE_INVOICE_STANDARD_A4",
+  "compiledVersion": 1,
+  "rootEntity": "Sale",
+  "parameterSchema": {
+    "saleId": "int"
+  },
+  "executionPlan": [
+    {
+      "provider": "SaleHeader",
+      "alias": "saleHeader",
+      "fields": [
+        "SaleNo",
+        "SaleDate",
+        "CustomerName",
+        "BillingAddress",
+        "NetAmount",
+        "TotalTax"
+      ],
+      "filters": [
+        "saleId"
+      ]
+    },
+    {
+      "provider": "SaleItems",
+      "alias": "saleItems",
+      "fields": [
+        "ProductName",
+        "Qty",
+        "Rate",
+        "MRP",
+        "LineTotal"
+      ],
+      "filters": [
+        "saleId"
+      ]
+    },
+    {
+      "provider": "TaxBreakup",
+      "alias": "taxBreakup",
+      "fields": [
+        "TaxName",
+        "TaxRate",
+        "TaxAmount"
+      ],
+      "filters": [
+        "saleId"
+      ]
+    }
+  ],
+  "formulaPlan": [
+    {
+      "name": "GrandTotal",
+      "expression": "saleHeader.NetAmount + saleHeader.TotalTax"
+    }
+  ]
+}

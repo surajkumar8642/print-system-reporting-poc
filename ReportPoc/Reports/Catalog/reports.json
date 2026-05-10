@@ -1,0 +1,14 @@
+[
+  {
+    "reportCode": "SALE_INVOICE_STANDARD_A4",
+    "name": "Sale Invoice Standard A4",
+    "family": "SaleInvoice",
+    "variant": "STANDARD_A4",
+    "rootEntity": "Sale",
+    "module": "Sales",
+    "activeVersion": "v1",
+    "paperSize": "A4",
+    "orientation": "Portrait",
+    "definitionMode": "CompiledPlan"
+  }
+]

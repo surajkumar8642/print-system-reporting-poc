@@ -1,0 +1,23 @@
+# Windows build artifacts
+**/bin/
+**/obj/
+**/.vs/
+*.user
+*.userosscache
+*.suo
+
+# Logs from local runs
+*.log
+run_*.log
+
+# Runtime-generated report build outputs
+ReportPoc/Reports/Templates/_Runtime/
+
+# Optional front-end dependencies (if added)
+node_modules/
+*.npm-debug.log*
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store

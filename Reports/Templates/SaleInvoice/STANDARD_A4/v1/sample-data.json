@@ -1,0 +1,47 @@
+{
+  "reportCode": "SALE_INVOICE_STANDARD_A4",
+  "parameters": {
+    "saleId": 101
+  },
+  "data": {
+    "saleHeader": {
+      "SaleNo": "S-101",
+      "SaleDate": "2026-05-10",
+      "CustomerName": "ABC Traders",
+      "BillingAddress": "Market Road, Surat",
+      "NetAmount": 2000.00,
+      "TotalTax": 360.00
+    },
+    "saleItems": [
+      {
+        "ProductName": "Item A",
+        "Qty": 2,
+        "Rate": 100.00,
+        "MRP": 150.00,
+        "LineTotal": 200.00
+      },
+      {
+        "ProductName": "Item B",
+        "Qty": 3,
+        "Rate": 600.00,
+        "MRP": 700.00,
+        "LineTotal": 1800.00
+      }
+    ],
+    "taxBreakup": [
+      {
+        "TaxName": "CGST",
+        "TaxRate": 9.0,
+        "TaxAmount": 180.00
+      },
+      {
+        "TaxName": "SGST",
+        "TaxRate": 9.0,
+        "TaxAmount": 180.00
+      }
+    ]
+  },
+  "computed": {
+    "GrandTotal": 2360.00
+  }
+}

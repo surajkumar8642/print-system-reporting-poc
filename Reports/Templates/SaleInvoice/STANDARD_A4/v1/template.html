@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Sale Invoice Standard A4</title>
+  <link rel="stylesheet" href="template.css">
+</head>
+<body>
+  <section class="invoice">
+    <header class="invoice-header">
+      <h1>Sale Invoice</h1>
+      <div class="meta">
+        <div><strong>Invoice No:</strong> {{saleHeader.SaleNo}}</div>
+        <div><strong>Date:</strong> {{saleHeader.SaleDate}}</div>
+      </div>
+    </header>
+
+    <section class="party-block">
+      <div><strong>Customer:</strong> {{saleHeader.CustomerName}}</div>
+      <div><strong>Address:</strong> {{saleHeader.BillingAddress}}</div>
+    </section>
+
+    <table class="items">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Qty</th>
+          <th>Rate</th>
+          <th>MRP</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each saleItems}}
+        <tr>
+          <td>{{ProductName}}</td>
+          <td>{{Qty}}</td>
+          <td>{{Rate}}</td>
+          <td>{{MRP}}</td>
+          <td>{{LineTotal}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+
+    <section class="tax-block">
+      <h2>Tax Breakup</h2>
+      <table class="tax">
+        <thead>
+          <tr>
+            <th>Tax</th>
+            <th>Rate</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each taxBreakup}}
+          <tr>
+            <td>{{TaxName}}</td>
+            <td>{{TaxRate}}</td>
+            <td>{{TaxAmount}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </section>
+
+    <footer class="totals">
+      <div><strong>Net Amount:</strong> {{saleHeader.NetAmount}}</div>
+      <div><strong>Total Tax:</strong> {{saleHeader.TotalTax}}</div>
+      <div><strong>Grand Total:</strong> {{computed.GrandTotal}}</div>
+    </footer>
+  </section>
+</body>
+</html>

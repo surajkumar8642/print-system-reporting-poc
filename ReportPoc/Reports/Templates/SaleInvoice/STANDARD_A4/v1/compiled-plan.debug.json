@@ -1,0 +1,68 @@
+{
+  "ReportCode": "SALE_INVOICE_STANDARD_A4",
+  "CompiledVersion": 6,
+  "RootEntity": "Sale",
+  "SourceVersion": "v1",
+  "CompiledPlanPath": "C:\\Work\\lerarn\\print-system\\ReportPoc\\Reports\\Templates\\SaleInvoice\\STANDARD_A4\\v1\\compiled-plan.bin",
+  "ParameterSchema": {
+    "saleId": "int"
+  },
+  "ExecutionPlan": [
+    {
+      "Provider": "SaleHeader",
+      "Alias": "saleHeader",
+      "Fields": [
+        "SaleNo",
+        "SaleDate",
+        "CustomerName",
+        "BillingAddress",
+        "NetAmount",
+        "TotalTax"
+      ],
+      "Filters": [
+        "saleId"
+      ],
+      "PrimaryFilterField": "SaleId",
+      "SingleRow": false,
+      "OrderBy": null
+    },
+    {
+      "Provider": "SaleItems",
+      "Alias": "saleItems",
+      "Fields": [
+        "ProductName",
+        "Qty",
+        "Rate",
+        "MRP",
+        "LineTotal"
+      ],
+      "Filters": [
+        "saleId"
+      ],
+      "PrimaryFilterField": "SaleId",
+      "SingleRow": false,
+      "OrderBy": null
+    },
+    {
+      "Provider": "TaxBreakup",
+      "Alias": "taxBreakup",
+      "Fields": [
+        "TaxName",
+        "TaxRate",
+        "TaxAmount"
+      ],
+      "Filters": [
+        "saleId"
+      ],
+      "PrimaryFilterField": "SaleId",
+      "SingleRow": false,
+      "OrderBy": null
+    }
+  ],
+  "FormulaPlan": [
+    {
+      "Name": "GrandTotal",
+      "Expression": "saleHeader.NetAmount \u002B saleHeader.TotalTax"
+    }
+  ]
+}
